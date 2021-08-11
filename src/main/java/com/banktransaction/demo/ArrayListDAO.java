@@ -14,9 +14,9 @@ import java.sql.Statement;
 @Component
 public class ArrayListDAO implements InterfaceBankDAO {
 	ArrayList<Bank> BANKACCOUNTS = new ArrayList();
-	static final String DB_URL = "jdbc:mysql://database-mysql.ck2jovupcm0u.us-east-2.rds.amazonaws.com/database1";
-	static final String USER = "admin";
-	static final String PASS = "testadmin";
+	static final String DB_URL = "jdbc:mysql://localhost:3306/database1";
+	static final String USER = "root";
+	static final String PASS = "my-secret-pw";
 	static final String QUERY = "SELECT accountnumber, customername, email, phonenumber, balance FROM user";
 	public ArrayListDAO(){
 		Bank user1 = new Bank("123213111", 5000.50, "One Pham", "nova1@gmail.com","5103334444");
@@ -126,6 +126,54 @@ public class ArrayListDAO implements InterfaceBankDAO {
 	    	x.printinfo();
 	      }
 		
+	}
+	public void addAccounttoDatabase(Bank thisaccount) {
+		 try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		         Statement stmt = conn.createStatement();
+		      ) {		      
+		         // Execute a query
+			 	System.out.println("Connected database successfully...");             
+		        String sql = "";
+		        
+		 			System.out.println("Inserting "+ thisaccount.getCustomername() +" into the table...");
+		 			sql = "INSERT INTO user (accountnumber,customername,phonenumber,email,balance) VALUES "
+		 					+ "('"+ thisaccount.getAccountnumber() +"','"+ thisaccount.getCustomername()+"','"+ thisaccount.getPhonenumber()+"','"+ thisaccount.getEmail() +"','"+thisaccount.getBalance()+"');";
+		 			
+		 			//System.out.println(sql);
+		 			stmt.executeUpdate(sql);
+		 			System.out.println("Inserted " + thisaccount.getAccountnumber() + " record into the table...");
+
+		 		
+		            	  
+		      } catch (SQLException e) {
+		         e.printStackTrace();
+		      } 	
+		
+	}
+	
+	public void getAllfromDatabase() {
+
+		 try(Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+		         Statement stmt = conn.createStatement();
+		         ResultSet rs = stmt.executeQuery(QUERY);
+			      ) {		      
+			         while(rs.next()){
+			            //Display values
+			        	System.out.println("-----------------------------------------");
+			            System.out.println("AccountNumber: " + rs.getString("accountnumber"));
+			            System.out.println("Name: " + rs.getString("customername"));
+			            System.out.println("Phone Number: " + rs.getString("phonenumber"));
+			            System.out.println("Email: " + rs.getString("email"));
+			            System.out.println("Balance: " + rs.getDouble("balance"));  
+			            //System.out.println("Password: " + rs.getString("password")); 
+			            //System.out.println("Created on: " + rs.getTimestamp("time")); 
+			            System.out.println("-----------------------------------------");
+			         }
+		      } catch (SQLException e) {
+		         e.printStackTrace();
+		      } 
+		 
+
 	}
 	public void addAlltoDatabase() {
 
